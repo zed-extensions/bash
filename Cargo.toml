@@ -10,4 +10,4 @@ path = "src/bash.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-zed_extension_api = "0.0.4"
+zed_extension_api = "0.7.0"
