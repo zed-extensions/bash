@@ -1,4 +1,4 @@
-use std::{env, fs};
+use std::{fs, path::PathBuf};
 use zed_extension_api::{self as zed, Result};
 
 const SERVER_PATH: &str = "node_modules/bash-language-server/out/cli.js";
@@ -64,20 +64,27 @@ impl zed::Extension for BashExtension {
     fn language_server_command(
         &mut self,
         id: &zed::LanguageServerId,
-        _worktree: &zed::Worktree,
+        worktree: &zed::Worktree,
     ) -> Result<zed::Command> {
+        let env = worktree.shell_env();
+        if let Some(cmd) = worktree.which(PACKAGE_NAME) {
+            return Ok(zed::Command {
+                command: cmd.clone(),
+                args: vec!["start".to_string()],
+                env,
+            });
+        }
         let server_path = self.server_script_path(&id)?;
         Ok(zed::Command {
             command: zed::node_binary_path()?,
             args: vec![
-                env::current_dir()
-                    .unwrap()
-                    .join(&server_path)
+                PathBuf::from(worktree.root_path())
+                    .join(server_path)
                     .to_string_lossy()
                     .to_string(),
                 "start".to_string(),
             ],
-            env: Default::default(),
+            env,
         })
     }
 
