@@ -6,9 +6,5 @@ description = "Bash-language-server support"
 repository = "https://github.com/zed-extensions/bash"
 authors = ["d1y <chenhonzhou@gmail.com>"]
 
-[lib]
-kind = "Rust"
-version = "0.0.4"
-
 [language_servers.bash-language-server]
 language = "Shell Script"
