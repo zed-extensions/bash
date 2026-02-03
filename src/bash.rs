@@ -10,7 +10,7 @@ struct BashExtension {
 
 impl BashExtension {
     fn server_exists(&self) -> bool {
-        fs::metadata(SERVER_PATH).map_or(false, |stat| stat.is_file())
+        fs::metadata(SERVER_PATH).is_ok_and(|stat| stat.is_file())
     }
 
     fn server_script_path(&mut self, id: &zed::LanguageServerId) -> Result<String> {
@@ -64,20 +64,29 @@ impl zed::Extension for BashExtension {
     fn language_server_command(
         &mut self,
         id: &zed::LanguageServerId,
-        _worktree: &zed::Worktree,
+        worktree: &zed::Worktree,
     ) -> Result<zed::Command> {
-        let server_path = self.server_script_path(&id)?;
+        let shell_env = worktree.shell_env();
+        if let Some(cmd) = worktree.which(PACKAGE_NAME) {
+            return Ok(zed::Command {
+                command: cmd.clone(),
+                args: vec!["start".to_string()],
+                env: shell_env,
+            });
+        }
+        // TODO: consider drawing `bash_language_server` from the worktree's own `./node_modules/`
+        let extension_work_dir = env::current_dir().unwrap();
+        let server_path = self.server_script_path(id)?;
         Ok(zed::Command {
             command: zed::node_binary_path()?,
             args: vec![
-                env::current_dir()
-                    .unwrap()
+                extension_work_dir
                     .join(&server_path)
                     .to_string_lossy()
                     .to_string(),
                 "start".to_string(),
             ],
-            env: Default::default(),
+            env: shell_env,
         })
     }
 
