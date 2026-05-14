@@ -1,7 +1,8 @@
 # Bash language server suppport for Zed
 
 > [!NOTE]
-> As of Zed 1.3.0, this extension has been deprecated and the language server support has been integrated into the editor itself. Please report any issues you encounter in the [Zed repository](https://github.com/zed-industries/zed).
+> As of Zed 1.3.0, this extension has been deprecated, as the language server support has been integrated into Zed itself.
+> From now on, please report any issues you encounter in the [Zed repository](https://github.com/zed-industries/zed).
 
 Language Server: https://github.com/bash-lsp/bash-language-server
 
